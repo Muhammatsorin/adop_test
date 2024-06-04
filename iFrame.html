@@ -1,0 +1,62 @@
+<!-- Time box -->
+<div class="timebox">
+    <div id="timerBox">00:00</div>
+    <script>
+        // Function to start the timer
+        function startTimer(duration, display) {
+            var timer = duration, minutes, seconds;
+            return setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    timer = duration;
+                }
+            }, 1000);
+        }
+
+        // Function to stop the timer
+        function stopTimer(intervalId) {
+            clearInterval(intervalId);
+        }
+
+        // Function to check if the timer box is more than 50% visible
+        function isElementInViewport(el) {
+            var rect = el.getBoundingClientRect();
+            var windowHeight = (window.innerHeight || document.documentElement.clientHeight);
+            var windowWidth = (window.innerWidth || document.documentElement.clientWidth);
+            var vertInView = (rect.top < windowHeight / 2) && ((rect.top + rect.height) > windowHeight / 2);
+            var horInView = (rect.left < windowWidth / 2) && ((rect.left + rect.width) > windowWidth / 2);
+            return (vertInView && horInView);
+        }
+
+        var timerInterval;
+
+        // Start the timer when the timer box is more than 50% visible
+        window.addEventListener('scroll', function () {
+            var timerBox = document.getElementById('timerBox');
+            if (isElementInViewport(timerBox)) {
+                timerBox.style.opacity = 1;
+                if (!timerInterval) {
+                    if (!timerBox.getAttribute('data-format') || timerBox.getAttribute('data-format') === 'mm:ss') {
+                        timerBox.textContent = "00:00"; // Reset the time to 00:00
+                        var twentyMinutes = 60 * 20, // 20 minutes
+                            display = timerBox;
+                        timerInterval = startTimer(twentyMinutes, display);
+                    } 
+                }
+            } else {
+                timerBox.style.opacity = 0;
+                if (timerInterval) {
+                    stopTimer(timerInterval);
+                    timerInterval = null;
+                }
+            }
+        });
+    </script>
+</div>
